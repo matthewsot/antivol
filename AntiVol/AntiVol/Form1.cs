@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-//http://www.geekpedia.com/tutorial176_Get-and-set-the-wave-sound-volume.html
+using NAudio.CoreAudioApi;
 
 namespace AntiVol
 {
     public partial class Form1 : Form
     {
+
         public Form1()
         {
             InitializeComponent();
@@ -24,13 +17,19 @@ namespace AntiVol
         {
             if (!e.KeyName.Contains("Volume")) return true;
 
+            //Thanks! https://stackoverflow.com/questions/2534595/get-master-sound-volume-in-c-sharp
+            MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
+            MMDevice defaultDevice = devEnum.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
             switch (e.KeyName)
             {
                 case "VolumeUp":
+                    defaultDevice.AudioEndpointVolume.VolumeStepUp();
                     break;
                 case "VolumeDown":
+                    defaultDevice.AudioEndpointVolume.VolumeStepDown();
                     break;
                 case "VolumeMute":
+                    defaultDevice.AudioEndpointVolume.Mute = !defaultDevice.AudioEndpointVolume.Mute;
                     break;
             }
             return false;

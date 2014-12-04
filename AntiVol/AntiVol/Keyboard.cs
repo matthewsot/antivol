@@ -202,8 +202,14 @@ public class KeyboardHook : IDisposable
     {
         bool allowKey = true;
 
+        //Filter wParam for KeyUp events only
         if (nCode >= 0)
         {
+            if (wParam == (IntPtr) WM_KEYUP || wParam == (IntPtr) WM_SYSKEYUP)
+            {
+                return NativeMethods.CallNextHookEx(hookID, nCode, wParam, ref lParam);
+            }
+
             allowKey = OnKeyIntercepted(new KeyboardHookEventArgs(lParam.vkCode, allowKey));
 
             //If this key is being suppressed, return a dummy value
