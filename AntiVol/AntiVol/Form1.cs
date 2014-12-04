@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
+//http://www.geekpedia.com/tutorial176_Get-and-set-the-wave-sound-volume.html
 
 namespace AntiVol
 {
@@ -18,12 +20,20 @@ namespace AntiVol
             Program.hook.KeyIntercepted += Hook_KeyIntercepted;
         }
 
-        private void Hook_KeyIntercepted(KeyboardHook.KeyboardHookEventArgs e)
+        private bool Hook_KeyIntercepted(KeyboardHook.KeyboardHookEventArgs e)
         {
-            if (e.KeyName.Contains("VolumeUp"))
+            if (!e.KeyName.Contains("Volume")) return true;
+
+            switch (e.KeyName)
             {
-                //move up the volume
+                case "VolumeUp":
+                    break;
+                case "VolumeDown":
+                    break;
+                case "VolumeMute":
+                    break;
             }
+            return false;
         }
 
         private KeyboardHook hook;

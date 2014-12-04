@@ -200,57 +200,14 @@ public class KeyboardHook : IDisposable
     private IntPtr HookCallback(
         int nCode, IntPtr wParam, ref KBDLLHOOKSTRUCT lParam)
     {
-        bool AllowKey = PassAllKeysToNextApp;
+        bool allowKey = true;
 
-        //Filter wParam for KeyUp events only
         if (nCode >= 0)
         {
-            if (wParam == (IntPtr)WM_KEYUP || wParam == (IntPtr)WM_SYSKEYUP)
-            {
-
-                // Check for modifier keys, but only if the key being
-                // currently processed isn't a modifier key (in other
-                // words, CheckModifiers will only run if Ctrl, Shift,
-                // CapsLock or Alt are active at the same time as
-                // another key)
-                if (!(lParam.vkCode >= 160 && lParam.vkCode <= 164))
-                {
-                    CheckModifiers();
-                }
-
-                // Check for key combinations that are allowed to 
-                // get through to Windows
-                //
-                // Ctrl+Esc or Windows key
-                if (AllowWindowsKey)
-                {
-                    switch (lParam.flags)
-                    {
-                        //Ctrl+Esc
-                        case 0:
-                            if (lParam.vkCode == 27)
-                                AllowKey = true;
-                            break;
-
-                        //Windows keys
-                        case 1:
-                            if ((lParam.vkCode == 91) || (lParam.vkCode == 92))
-                                AllowKey = true;
-                            break;
-                    }
-                }
-                // Alt+Tab
-                if (AllowAltTab)
-                {
-                    if ((lParam.flags == 32) && (lParam.vkCode == 9))
-                        AllowKey = true;
-                }
-
-                OnKeyIntercepted(new KeyboardHookEventArgs(lParam.vkCode, AllowKey));
-            }
+            allowKey = OnKeyIntercepted(new KeyboardHookEventArgs(lParam.vkCode, allowKey));
 
             //If this key is being suppressed, return a dummy value
-            if (AllowKey == false)
+            if (allowKey == false)
                 return (System.IntPtr)1;
         }
         //Pass key to next application
@@ -264,17 +221,19 @@ public class KeyboardHook : IDisposable
     /// Raises the KeyIntercepted event.
     /// </summary>
     /// <param name="e">An instance of KeyboardHookEventArgs</param>
-    public void OnKeyIntercepted(KeyboardHookEventArgs e)
+    public bool OnKeyIntercepted(KeyboardHookEventArgs e)
     {
         if (KeyIntercepted != null)
-            KeyIntercepted(e);
+            return KeyIntercepted(e);
+
+        return true;
     }
 
     /// <summary>
     /// Delegate for KeyboardHook event handling.
     /// </summary>
     /// <param name="e">An instance of InterceptKeysEventArgs.</param>
-    public delegate void KeyboardHookEventHandler(KeyboardHookEventArgs e);
+    public delegate bool KeyboardHookEventHandler(KeyboardHookEventArgs e);
 
     /// <summary>
     /// Event arguments for the KeyboardHook class's KeyIntercepted event.
