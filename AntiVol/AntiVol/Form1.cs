@@ -13,9 +13,19 @@ namespace AntiVol
             Program.hook.KeyIntercepted += Hook_KeyIntercepted;
         }
 
+        private bool enabled = true;
+
         private bool Hook_KeyIntercepted(KeyboardHook.KeyboardHookEventArgs e)
         {
-            if (!e.KeyName.Contains("Volume")) return true;
+            if (!enabled) return true;
+            if (!e.KeyName.Contains("Volume") && e.KeyName != "Scroll") return true;
+
+            if (e.KeyName == "Scroll")
+            {
+                //TODO: make it a taskbar thing
+                WindowState = FormWindowState.Normal; //using scroll lock as the hotkey for this, as I never have any other use for it
+                return false;
+            }
 
             //Thanks! https://stackoverflow.com/questions/2534595/get-master-sound-volume-in-c-sharp
             MMDeviceEnumerator devEnum = new MMDeviceEnumerator();
@@ -31,6 +41,8 @@ namespace AntiVol
                 case "VolumeMute":
                     defaultDevice.AudioEndpointVolume.Mute = !defaultDevice.AudioEndpointVolume.Mute;
                     break;
+                case "MediaNextTrack":
+                    break;
             }
             return false;
         }
@@ -39,12 +51,12 @@ namespace AntiVol
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            enabled = true;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-
+            enabled = false;
         }
     }
 }
