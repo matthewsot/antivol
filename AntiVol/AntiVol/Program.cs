@@ -8,6 +8,7 @@ namespace AntiVol
 {
     static class Program
     {
+        public static KeyboardHook hook;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -16,7 +17,10 @@ namespace AntiVol
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            using (hook = new KeyboardHook())
+            {
+                Application.Run(new Form1());
+            }
         }
     }
 }

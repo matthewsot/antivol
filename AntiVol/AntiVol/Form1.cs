@@ -15,6 +15,27 @@ namespace AntiVol
         public Form1()
         {
             InitializeComponent();
+            Program.hook.KeyIntercepted += Hook_KeyIntercepted;
+        }
+
+        private void Hook_KeyIntercepted(KeyboardHook.KeyboardHookEventArgs e)
+        {
+            if (e.KeyName.Contains("VolumeUp"))
+            {
+                //move up the volume
+            }
+        }
+
+        private KeyboardHook hook;
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
